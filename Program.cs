@@ -27,6 +27,11 @@ internal static class Program
                 try
                 {
                     var cmd = args[0].ToLower();
+                    if (cmd is "help" or "-h" or "--help")
+                    {
+                        PrintHelp();
+                        return;
+                    }
                     switch (cmd)
                     {
                         case "install":
@@ -102,21 +107,21 @@ internal static class Program
                                     Console.WriteLine($"服务 {args[1]} 已卸载");
                                     break;
                                 default:
-                                {
-                                    Console.Write($"确认要卸载服务 {args[1]}? (y/n): ");
-                                    var key = Console.ReadKey();
-                                    Console.WriteLine();
-                                    if (key.KeyChar is 'y' or 'Y')
                                     {
-                                        ServiceManager.UninstallService(args[1]);
-                                        Console.WriteLine($"服务 {args[1]} 已卸载");
+                                        Console.Write($"确认要卸载服务 {args[1]}? (y/n): ");
+                                        var key = Console.ReadKey();
+                                        Console.WriteLine();
+                                        if (key.KeyChar is 'y' or 'Y')
+                                        {
+                                            ServiceManager.UninstallService(args[1]);
+                                            Console.WriteLine($"服务 {args[1]} 已卸载");
+                                        }
+                                        else
+                                        {
+                                            Console.WriteLine("操作已取消");
+                                        }
+                                        break;
                                     }
-                                    else
-                                    {
-                                        Console.WriteLine("操作已取消");
-                                    }
-                                    break;
-                                }
                             }
                             break;
                         case "start":
@@ -347,27 +352,34 @@ internal static class Program
 
     private static void PrintUsage()
     {
-        Console.WriteLine("""
-                          NssmSharp - 纯C# NSSM服务管理器\n\n用法:
-                            nssmsharp install <服务名> <可执行文件路径> [参数]
-                            nssmsharp edit <服务名>
-                            nssmsharp remove <服务名> [confirm]
-                            nssmsharp start <服务名>
-                            nssmsharp stop <服务名>
-                            nssmsharp restart <服务名>
-                            nssmsharp status <服务名>
-                            nssmsharp statuscode <服务名>
-                            nssmsharp rotate <服务名>
-                            nssmsharp list [all]
-                            nssmsharp processes <服务名>
-                            nssmsharp dump <服务名> [新服务名]
-                            nssmsharp get <服务名> <参数名> [子参数]
-                            nssmsharp set <服务名> <参数名> <值...>
-                            nssmsharp reset <服务名> <参数名>
-                            nssmsharp unset <服务名> <参数名>
-                            nssmsharp gui
+        Console.WriteLine("NssmSharp - 纯C# NSSM服务管理器\n");
+        Console.WriteLine("用法: nssmsharp <命令> [参数...]");
+        Console.WriteLine("常用命令: install, edit, remove, start, stop, restart, status, list, gui");
+        Console.WriteLine("更多命令和详细说明请用: nssmsharp help\n");
+    }
 
-                          参数说明和详细文档请参考 nssm 原版文档和 nssmsharp README.md。
-                          """);
+    private static void PrintHelp()
+    {
+        Console.WriteLine("NssmSharp - 纯C# NSSM服务管理器\n");
+        Console.WriteLine("命令列表:");
+        Console.WriteLine("  install <服务名> <可执行文件路径> [参数]   安装新服务");
+        Console.WriteLine("  edit <服务名>                          编辑服务配置 (弹窗)");
+        Console.WriteLine("  remove <服务名> [confirm]              卸载服务，可加 confirm 跳过确认");
+        Console.WriteLine("  start <服务名>                         启动服务");
+        Console.WriteLine("  stop <服务名>                          停止服务");
+        Console.WriteLine("  restart <服务名>                       重启服务");
+        Console.WriteLine("  status <服务名>                        查询服务状态");
+        Console.WriteLine("  statuscode <服务名>                    查询服务状态码");
+        Console.WriteLine("  rotate <服务名>                        请求日志轮转");
+        Console.WriteLine("  list [all]                             列出 NssmSharp 管理的服务，all 显示全部");
+        Console.WriteLine("  processes <服务名>                     显示服务关联进程");
+        Console.WriteLine("  dump <服务名> [新服务名]               导出服务为 nssm 命令");
+        Console.WriteLine("  get <服务名> <参数名> [子参数]         获取服务参数");
+        Console.WriteLine("  set <服务名> <参数名> <值...>          设置服务参数");
+        Console.WriteLine("  reset <服务名> <参数名>                重置服务参数为默认");
+        Console.WriteLine("  unset <服务名> <参数名>                删除服务参数");
+        Console.WriteLine("  gui                                    启动图形界面");
+        Console.WriteLine("  help, -h, --help                       显示本帮助");
+        Console.WriteLine("\n参数说明和详细文档请参考 nssm 原版文档和 nssmsharp README.md。");
     }
 }
